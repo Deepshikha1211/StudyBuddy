@@ -8,9 +8,11 @@ const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
 // Register
+
+    
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, university, year, courses = [] } = req.body;
+    const { name, email, password, university, year } = req.body;
     if (!name || !email || !password) return res.status(400).json({ message: 'Missing fields' });
 
     const existing = await User.findOne({ email });
@@ -35,34 +37,64 @@ router.post('/login', async (req, res) => {
     if (!email || !password) return res.status(400).json({ message: 'Missing fields' });
 
     const user = await User.findOne({ email });
-    if (!user || !user.passwordHash) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user || !user.passwordHash) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
     const isMatch = await comparePassword(password, user.passwordHash);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email }
+    });
   } catch (err) {
-    console.error(err); res.status(500).send('Server error');
+    console.error(err);
+    res.status(500).send('Server error');
   }
 });
 
+
 // Get current user profile
 router.get('/me', authMiddleware, async (req, res) => {
-  res.json(req.user);
+  res.json({
+    id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    university: req.user.university,
+    year: req.user.year,
+    profilePic: req.user.profilePic
+  });
 });
+
 
 // Update profile (allowed fields only)
 router.put('/me', authMiddleware, async (req, res) => {
   try {
-    const allowed = ['name','university','year','courses','studyStyle','goals','availability'];
+    const allowed = ['name','university','year','profilePic'];
     allowed.forEach(field => {
       if (req.body[field] !== undefined) req.user[field] = req.body[field];
     });
+
     await req.user.save();
-    res.json(req.user);
+
+    res.json({
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      university: req.user.university,
+      year: req.user.year,
+      profilePic: req.user.profilePic
+    });
   } catch (err) {
-    console.error(err); res.status(500).send('Server error');
+    console.error(err);
+    res.status(500).send('Server error');
   }
 });
 

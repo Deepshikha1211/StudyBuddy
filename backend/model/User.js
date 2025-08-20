@@ -13,10 +13,10 @@ const UserSchema = new mongoose.Schema({
   passwordHash: { type: String }, // null for OAuth users (not used now)
   university: { type: String },
   year: { type: String },         // "2" or "2nd"
-  courses: [{ type: String }],
-  studyStyle: { type: String },
-  goals: [{ type: String }],
-  availability: [AvailabilitySchema],
+  // courses: [{ type: String }],
+  // studyStyle: { type: String },
+  // goals: [{ type: String }],
+  // availability: [AvailabilitySchema],
   profilePic: {
     url: String,
     public_id: String
