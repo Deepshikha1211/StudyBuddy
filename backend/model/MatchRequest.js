@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const matchRequestSchema = new mongoose.Schema(
   {
@@ -27,5 +27,5 @@ const matchRequestSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+module.exports = mongoose.model('MatchRequest', matchRequestSchema);
 
-export default mongoose.model('MatchRequest', matchRequestSchema);

@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
     if (existing) return res.status(400).json({ message: 'Email already registered' });
 
     const passwordHash = await hashPassword(password);
-    const user = new User({ name, email, passwordHash, university, year, courses });
+    const user = new User({ name, email, passwordHash, university, year });
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });

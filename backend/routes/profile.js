@@ -62,6 +62,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Update profile
+// Update profile (general + skill levels)
 router.put(
   '/',
   authMiddleware,
@@ -69,17 +70,34 @@ router.put(
   checkValidation,
   async (req, res) => {
     try {
-      const updatedProfile = await profileService.updateProfile(req.user._id, req.body);
+      let updatedProfile;
+
+      // If skill-level update (subject + level passed)
+      if (req.body.subject && req.body.level) {
+        updatedProfile = await profileService.updateSkillLevel(
+          req.user._id,
+          req.body.subject,
+          req.body.level
+        );
+      } else {
+        // General profile update
+        updatedProfile = await profileService.updateProfile(req.user._id, req.body);
+      }
+
       res.json(updatedProfile);
     } catch (err) {
       if (err.message === 'Profile not found') {
         return res.status(404).json({ message: err.message });
+      }
+      if (err.message === 'Skill level must be between 1 and 5') {
+        return res.status(400).json({ message: err.message });
       }
       console.error(err);
       res.status(500).send('Server error');
     }
   }
 );
+
 
 // Delete profile
 router.delete('/', authMiddleware, async (req, res) => {
@@ -95,33 +113,6 @@ router.delete('/', authMiddleware, async (req, res) => {
 
 // === Skill Level Routes ===
 
-// Add or update skill level for a subject
-router.put(
-  '/skill-level/:subject',
-  authMiddleware,
-  [
-    param('subject').isString().withMessage('Subject is required'),
-    body('level').isInt({ min: 1, max: 5 }).withMessage('Level must be 1-5'),
-  ],
-  checkValidation,
-  async (req, res) => {
-    try {
-      const { subject } = req.params;
-      const { level } = req.body;
-      const profile = await profileService.updateSkillLevel(req.user._id, subject, level);
-      res.json(profile);
-    } catch (err) {
-      if (err.message === 'Profile not found') {
-        return res.status(404).json({ message: err.message });
-      }
-      if (err.message === 'Skill level must be between 1 and 5') {
-        return res.status(400).json({ message: err.message });
-      }
-      console.error(err);
-      res.status(500).send('Server error');
-    }
-  }
-);
 
 // Remove skill level for a subject
 router.delete(

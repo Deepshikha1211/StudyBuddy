@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const matchSchema = new mongoose.Schema(
   {
@@ -29,5 +29,4 @@ const matchSchema = new mongoose.Schema(
 
 // Ensure same pair isn't stored twice (unique compound index)
 matchSchema.index({ users: 1 }, { unique: true });
-
-export default mongoose.model('Match', matchSchema);
+module.exports =  mongoose.model('Match', matchSchema);
