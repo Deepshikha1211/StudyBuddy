@@ -76,23 +76,72 @@ Google OAuth, profile pictures, and advanced features will be added later.
 
 - Placeholder in profile update route to trigger matching recalculations and suggestions refresh immediately.
 
+
+---
+
+### 3️⃣ Matching Module
+
+#### Match Requests
+
+* **Send Match Request** (`POST /api/matching/request/:targetUserId`)
+
+  * Sends a request to another user to connect for study
+  * Only one request can be sent per target until accepted/rejected
+
+* **Accept Match Request** (`POST /api/matching/accept/:requestId`)
+
+  * Accept a pending request (receiver only)
+  * Creates a `Match` document if users are compatible
+
+* **Reject Match Request** (`POST /api/matching/reject/:requestId`)
+
+  * Rejects a pending request
+
+#### Match Retrieval
+
+* **Get All Matches** (`GET /api/matching/matches`)
+
+  * Retrieves all accepted matches for logged-in user
+
+* **Get Pending Requests** (`GET /api/matching/requests`)
+
+  * Retrieves all pending requests received by logged-in user
+
+#### Suggestions & Compatibility
+
+* **Get Compatible Users** (`GET /api/matching/suggestions`)
+
+  * Returns users compatible with logged-in user based on:
+
+    * `subjectsEnrolled` overlap
+    * `goals` overlap
+    * `matchPreference` compatibility
+    * Availability overlap
+
 ---
 
 ## 🔧 API Summary
 
-| Endpoint                         | Method | Description                                      | Auth Required |
-|---------------------------------|--------|------------------------------------------------|---------------|
-| `/auth/register`                 | POST   | Register a new user                             | No            |
-| `/auth/login`                    | POST   | Login user                                     | No            |
-| `/auth/me`                      | GET    | Get logged-in user details                      | Yes           |
-| `/auth/me`                      | PUT    | Update logged-in user basic profile             | Yes           |
-| `/auth/me`                      | DELETE | Delete logged-in user account                    | Yes           |
-| `/profile`                      | POST   | Create extended profile                          | Yes           |
-| `/profile`                      | GET    | Get extended profile                             | Yes           |
-| `/profile`                      | PUT    | Update extended profile                          | Yes           |
-| `/profile`                      | DELETE | Delete extended profile                          | Yes           |
-| `/profile/skill-level/:subject` | PUT    | Add or update skill level for a subject         | Yes           |
-| `/profile/skill-level/:subject` | DELETE | Remove skill level for a subject                  | Yes           |
+| Endpoint                              | Method | Description                                     | Auth Required |
+| ------------------------------------- | ------ | ----------------------------------------------- | ------------- |
+| `/auth/register`                      | POST   | Register a new user                             | No            |
+| `/auth/login`                         | POST   | Login user                                      | No            |
+| `/auth/me`                            | GET    | Get logged-in user details                      | Yes           |
+| `/auth/me`                            | PUT    | Update logged-in user basic profile             | Yes           |
+| `/auth/me`                            | DELETE | Delete logged-in user account                   | Yes           |
+| `/profile`                            | POST   | Create extended profile                         | Yes           |
+| `/profile`                            | GET    | Get extended profile                            | Yes           |
+| `/profile`                            | PUT    | Update extended profile                         | Yes           |
+| `/profile`                            | DELETE | Delete extended profile                         | Yes           |
+| `/profile/skill-level/:subject`       | PUT    | Add or update skill level for a subject         | Yes           |
+| `/profile/skill-level/:subject`       | DELETE | Remove skill level for a subject                | Yes           |
+| `/api/matching/request/:targetUserId` | POST   | Send a match request to another user            | Yes           |
+| `/api/matching/accept/:requestId`     | POST   | Accept a pending match request                  | Yes           |
+| `/api/matching/reject/:requestId`     | POST   | Reject a pending match request                  | Yes           |
+| `/api/matching/matches`               | GET    | Get all accepted matches for logged-in user     | Yes           |
+| `/api/matching/requests`              | GET    | Get all pending requests received               | Yes           |
+| `/api/matching/suggestions`           | GET    | Get list of compatible users for logged-in user | Yes           |
 
 ---
+
 
